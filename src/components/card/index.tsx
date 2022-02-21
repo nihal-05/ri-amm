@@ -1,7 +1,12 @@
 import React from "react";
-// import { SharedDivider } from "../../styles/styled";
 
-import { CardBody, CardHeading, StyledCard } from "./style";
+import {
+  CardBody,
+  CardHeading,
+  SharedDivider,
+  StyledCard,
+  WrappingContainer,
+} from "./style";
 
 interface CardProps {
   cardTitle?: string;
@@ -11,11 +16,13 @@ interface CardProps {
 
 const Card = ({ children, cardTitle, style }: CardProps) => {
   return (
-    <StyledCard style={style}>
-      <CardHeading>{cardTitle}</CardHeading>
-      {/* <SharedDivider /> */}
-      <CardBody>{children}</CardBody>
-    </StyledCard>
+    <WrappingContainer>
+      <StyledCard style={style}>
+        <CardHeading>{cardTitle}</CardHeading>
+        <SharedDivider />
+        <CardBody>{children}</CardBody>
+      </StyledCard>
+    </WrappingContainer>
   );
 };
 
