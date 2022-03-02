@@ -2,8 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import App from "./App";
+import RootApp from "./components";
+
 import reportWebVitals from "./reportWebVitals";
 import { GlobalStyle } from "./theme";
 
@@ -21,7 +22,8 @@ ReactDOM.render(
       draggable
       pauseOnHover
     />
-    <App />
+
+    <RootApp />
   </React.StrictMode>,
   document.getElementById("root")
 );

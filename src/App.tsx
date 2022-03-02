@@ -1,17 +1,22 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "react-toastify/dist/ReactToastify.css";
 
 import * as walletService from "./blockchain/wallet";
 import Card from "./components/card";
+
 import { CardHeading } from "./components/card/style";
-import { SharedArrowSign, SharedBlock, SharedPlusSign } from "./shared";
+import {
+  SharedArrowSign,
+  SharedBlock,
+  SharedPlusSign,
+} from "./shared/components";
 import { Button } from "./shared/components/button";
 import Input from "./shared/components/input";
-import { SharedBox, SharedStack } from "./shared/styled";
+import { SharedBox, SharedStack } from "./shared/components/styled";
 import { AppWrapper } from "./theme";
 
-function App() {
+const App = () => {
   const [reserves, setReserves] = useState({});
 
   const [isNormal, setIsNormal] = useState(true);
@@ -55,17 +60,16 @@ function App() {
   const [removeLiqPercent, setRemoveLiqPercent] = useState<number>(0); // Remove liquidity percentange (UI)
   const [isFetchedBalance, setIsFetchedBalance] = useState(false); // (UI) passing computedTokenBalances
 
-  const [myCall, setMyCall] = useState("");
+  const [myCall, setMyCall] = useState(""); // (UI)
 
   // ─── STATE FOR SWAP  SECTION ────────────────────────────────────────────────
 
   // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────────────
 
-  const initialiazeWallet = async () => {
-    // const accounts = await walletService.getAllAccounts();
-    // setMyAccount((accounts as any)[0]);
+  const initializeWallet = async () => {
+    const accounts = await walletService.getAllAccounts();
+    setMyAccount((accounts as any)[0]);
   };
-
   // ─── FORM LOGIC (start) ─────────────────────────────────────────────────────────────────
   const handleSvgClick = () => {
     setIsNormal(!isNormal);
@@ -210,7 +214,6 @@ function App() {
   useEffect(() => {
     (async () => {
       const accounts = await walletService.getAllAccounts();
-
       setMyAccount((accounts as any)[0]);
       // getting reserves
       const reservesFrom =
@@ -220,36 +223,46 @@ function App() {
 
     if ((window as any).ethereum) {
       (window as any).ethereum.on("accountsChanged", (newAccounts: any) => {
-        setMyAccount(newAccounts);
+        if (newAccounts.length > 0) {
+          setMyAccount(newAccounts);
+        } else {
+        }
+        window.location.reload();
+        console.log(newAccounts);
       });
     }
-
     setShowSection("add");
   }, []);
 
   useEffect(() => {
-    // ─── ADD WALLET CONNECTED LOGIC HERE  ────────────────────────────────────────────
-    (async () => {
-      if (myAccount) {
-        const token0Balance = await await walletService.fetchToken0Balance(
-          myAccount
-        );
-        const token1Balance = await await walletService.fetchToken1Balance(
-          myAccount
-        );
+    // ─── ADD WALLET CONNECTED LOGIC HERE  ──────────────────────    ──────────────────────
+    // @ts-ignore
+
+    if (myAccount !== "") {
+      (async () => {
+        const token0Balance =
+          myAccount &&
+          (await await walletService.fetchToken0Balance(myAccount));
+        const token1Balance =
+          myAccount &&
+          (await await walletService.fetchToken1Balance(myAccount));
         if (token0Balance && token1Balance) {
           setUserTokenBalances({
             token0: token0Balance,
             token1: token1Balance,
           });
         }
-        const liquidityLP = await walletService.getLpTokenBalance(myAccount);
+        const liquidityLP =
+          myAccount && (await walletService.getLpTokenBalance(myAccount));
         setPoolTokenBalances({
           ...poolTokenBalances,
           lpBalanace: liquidityLP,
         });
-      }
-    })();
+      })();
+    } else {
+      return;
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myAccount]);
 
@@ -363,7 +376,7 @@ function App() {
   //
 
   const Nav = (
-    <Button onClick={initialiazeWallet} align="end" m="6px">
+    <Button onCLick={initializeWallet} align="end" m="6px">
       {myAccount !== ""
         ? walletService.formatAccount(myAccount)
         : "Connect Wallet"}
@@ -383,8 +396,12 @@ function App() {
     walletService.convertToPrecisedNumber(computedTokenBalances.BUSTBalance),
   ];
 
+  //
+  // ─── JSX RENDER STARTS HERE ─────────────────────────────────────────────────────
+  //'
+
   return (
-    <>
+    <React.Fragment>
       {Nav}
       <AppWrapper>
         <Card>
@@ -571,8 +588,8 @@ function App() {
           )}
         </Card>
       </AppWrapper>
-    </>
+    </React.Fragment>
   );
-}
+};
 
 export default App;

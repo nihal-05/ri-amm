@@ -21,6 +21,7 @@ export const getAllAccounts = async () => {
       const accounts = await (window as any).ethereum.request({
         method: "eth_requestAccounts",
       });
+
       return accounts;
     }
   } catch (error) {

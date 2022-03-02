@@ -1,4 +1,4 @@
-import { SharedBox } from "../../styled";
+import { SharedBox } from "../styled";
 import { InputInnerContainer, InputWrapper, StyledInput } from "./style";
 
 interface InputProps {
