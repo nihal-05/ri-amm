@@ -1,24 +1,36 @@
 import styled from "styled-components";
-import { colors } from "../../theme";
+import { colors, screenSizes } from "../../theme";
 
-export const WrappingContainer = styled.h2`
-  font-weight: bold;
-  color: ${colors.brandTextColor};
-  background-color: red;
+export const CardWrapper = styled.div`
+  color: white;
+  /* width: 100%; */
+  height: 85vh;
+  border-radius: 12px;
+  padding: 10px 16px;
+  background-color: #1c3738;
+  font-family: sans-serif;
+  font-size: 1.1rem;
+  justify-content: space-between;
+  @media (min-width: ${screenSizes.mediaSX}px) {
+    width: 400px;
+    padding: 20px 50px;
+  }
 `;
 
-export const CardHeading = styled.h2`
-  font-weight: bold;
-  color: ${colors.brandTextColor};
-  padding: 20px 40px;
+export const CardHeading = styled.section`
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: space-evenly;
 `;
 export const CardBody = styled.section`
-  padding: 20px 40px;
-`;
-export const StyledCard = styled.section`
-  border: 2px solid ${colors.myBorderColor};
-  border-radius: 12px;
-  background-color: ${colors.cardBg};
+  display: flex;
+  flex-direction: column;
+  -webkit-box-align: center;
+  justify-content: space-around;
+  min-width: 280px;
+  height: 100%;
 `;
 
 export const SharedDivider = styled.p`

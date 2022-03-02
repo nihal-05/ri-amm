@@ -1,28 +1,16 @@
 import React from "react";
 
-import {
-  CardBody,
-  CardHeading,
-  SharedDivider,
-  StyledCard,
-  WrappingContainer,
-} from "./style";
+import { CardBody, CardWrapper } from "./style";
 
 interface CardProps {
-  cardTitle?: string;
   children: React.ReactNode;
-  style?: {};
 }
 
-const Card = ({ children, cardTitle, style }: CardProps) => {
+const Card = ({ children }: CardProps) => {
   return (
-    <WrappingContainer>
-      <StyledCard style={style}>
-        <CardHeading>{cardTitle}</CardHeading>
-        <SharedDivider />
-        <CardBody>{children}</CardBody>
-      </StyledCard>
-    </WrappingContainer>
+    <CardWrapper>
+      <CardBody>{children}</CardBody>
+    </CardWrapper>
   );
 };
 

@@ -1,4 +1,4 @@
-import { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 
 export interface Colors {
   //   My colors  (start)
@@ -28,14 +28,14 @@ export interface Colors {
 
 export const colors: Colors = {
   //   My colors  (start)
-  brandBg: "#0d172b",
+  brandBg: "#212429",
   brandTextColor: "#6053d6",
   myBorderColor: "#1e293b",
   inputBg: "#1f2937",
   inputTextColor: "#f3f4f6",
   btnBg: "#3730a3",
   btnTextColor: "#f3f4f6",
-  cardBg: "#111827",
+  cardBg: "#1e2025",
   //   My colors  (end)
   themeBackground: "#1B2732",
   white: "#ffffff",
@@ -104,6 +104,7 @@ export const theme: ThemeStarter = {
 
 export interface ScreenSizes {
   mediaXS: number;
+  mediaSX: number;
   mediaS: number;
   mediaM: number;
   mediaL: number;
@@ -114,6 +115,7 @@ export interface ScreenSizes {
 }
 export const screenSizes: ScreenSizes = {
   mediaXS: 380,
+  mediaSX: 400,
   mediaS: 640,
   mediaM: 800,
   mediaL: 1024,
@@ -125,15 +127,35 @@ export const screenSizes: ScreenSizes = {
 
 export const GlobalStyle = createGlobalStyle`
 
+:root {
+
+  --toastify-font-weight:700;
+}
+
 *{
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+  
+
 body {
     background: #efebeb;
     margin: 0;
-    padding: 0;
+    padding: 16px;
     font-family:'sans-serif';
+    width: 100vw;
+    height: 100vh;
+    color: #000F08;
+   
 }`;
+
+export const AppWrapper = styled.main`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
