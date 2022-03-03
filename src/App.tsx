@@ -157,29 +157,31 @@ const App = () => {
     let value = e.target.value;
 
     setFormToken0Value(value);
-    if (value >= 0 && showSection === "add") {
+    if (value >= 0 && value.length !== 0 && showSection === "add") {
       // Logic for Add Liquidity goes here
       // console.log("IN ADD");
 
       getToken1Value(value);
-    } else if (value >= 0 && showSection === "swap") {
+    } else if (value >= 0 && value.length !== 0 && showSection === "swap") {
       setMyCall("token0Change");
       // Logic for Swapping Liquidity goes here
       const getAmountsOut = await walletService.getAmountsOutFromSC(value);
       // console.log("IN SWAP");
       setFormToken1Value(getAmountsOut);
     } else {
-      setFormToken1Value(0);
-      setFormToken0Value(0);
+      setFormToken1Value("");
+      setFormToken0Value("");
     }
   };
+
+  console.log(showSection);
   const handleToken1Change = async (e: any) => {
     let value = e.target.value;
     setFormToken1Value(value);
-    if (value >= 0 && showSection === "add") {
+    if (value >= 0 && value.length !== 0 && showSection === "add") {
       // console.log("IN Add");
       getToken0Value(value);
-    } else if (value >= 0 && showSection === "swap") {
+    } else if (value >= 0 && value.length !== 0 && showSection === "swap") {
       setMyCall("token1Change");
       // console.log("IN SWAP");
       // Logic for Swapping Liquidity goes here
@@ -187,8 +189,8 @@ const App = () => {
 
       setFormToken0Value(getAmountsIn);
     } else {
-      setFormToken1Value(0);
-      setFormToken0Value(0);
+      setFormToken1Value("");
+      setFormToken0Value("");
     }
   };
 
@@ -208,6 +210,9 @@ const App = () => {
     } else {
       setShowSection("swap");
     }
+
+    setFormToken0Value("");
+    setFormToken1Value("");
   };
 
   const handleRemoveLiquidityValue = async (e: any) => {
