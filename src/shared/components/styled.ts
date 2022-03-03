@@ -55,3 +55,25 @@ export const SharedBox = styled.div<ISharedBox>`
       }
     `};
 `;
+
+export const SharedFeedbackButton = styled.button`
+  height: 40px;
+  border: solid 3px #cccccc;
+  background: #333;
+  width: 100px;
+  line-height: 32px;
+  -webkit-transform: rotate(-90deg);
+  font-weight: 600;
+  color: white;
+  transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  text-align: center;
+  font-size: 17px;
+  position: fixed;
+  right: -40px;
+  top: 45%;
+  text-decoration: none;
+  font-family: "Roboto", helvetica, arial, sans-serif;
+  z-index: 999;
+`;

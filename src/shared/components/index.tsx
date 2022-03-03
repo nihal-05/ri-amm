@@ -64,3 +64,31 @@ export const SharedArrowSign = (
     <polyline points="19 12 12 19 5 12"></polyline>
   </svg>
 );
+
+export const SharedLoader = (
+  <svg
+    width="20px"
+    height="118px"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="xMidYMid"
+  >
+    <circle
+      cx="50"
+      cy="50"
+      fill="none"
+      stroke="#290908"
+      strokeWidth="13"
+      r="31"
+      strokeDasharray="146.08405839192537 50.69468613064179"
+    >
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        repeatCount="indefinite"
+        dur="1s"
+        values="0 50 50;360 50 50"
+        keyTimes="0;1"
+      ></animateTransform>
+    </circle>
+  </svg>
+);

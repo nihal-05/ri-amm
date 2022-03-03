@@ -13,7 +13,11 @@ import {
 } from "./shared/components";
 import { Button } from "./shared/components/button";
 import Input from "./shared/components/input";
-import { SharedBox, SharedStack } from "./shared/components/styled";
+import {
+  SharedBox,
+  SharedFeedbackButton,
+  SharedStack,
+} from "./shared/components/styled";
 import { AppWrapper } from "./theme";
 
 const App = () => {
@@ -78,7 +82,7 @@ const App = () => {
     e.preventDefault();
 
     if (showSection === "add") {
-      setLoadingText("Approving BUSD token...");
+      setLoadingText("Approving BUSD token...   ");
       const isToken0Allowed = await walletService.getToken0Approve(
         formToken0Value
       );
@@ -376,7 +380,7 @@ const App = () => {
   //
 
   const Nav = (
-    <Button onCLick={initializeWallet} align="end" m="6px">
+    <Button onClick={initializeWallet} align="end" m="6px">
       {myAccount !== ""
         ? walletService.formatAccount(myAccount)
         : "Connect Wallet"}
@@ -403,6 +407,13 @@ const App = () => {
   return (
     <React.Fragment>
       {Nav}
+      <SharedFeedbackButton
+        as="a"
+        href="https://forms.gle/5piEZUJdCw9ZF5vE8"
+        target="_blank"
+      >
+        Feedback
+      </SharedFeedbackButton>
       <AppWrapper>
         <Card>
           <CardHeading>
@@ -556,7 +567,7 @@ const App = () => {
               <SharedBox
                 direction="row"
                 justify="center"
-                onClick={handleSvgClick}
+                // onClick={handleSvgClick}
               >
                 {SharedArrowSign}
               </SharedBox>

@@ -1,4 +1,3 @@
-import React from "react";
 import App from "../App";
 import useChainId from "../shared/hooks/useChainId";
 import ErrorPage from "./errorPage";

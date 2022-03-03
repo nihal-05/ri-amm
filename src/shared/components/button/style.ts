@@ -23,8 +23,7 @@ const buttonStyles = css`
   :hover,
   :focus {
     /* box-shadow: 0px 0px 5px rgb(0 0 0 / 90%); */
-    background-color: #8baaad;
-    opacity: 0.5;
+    filter: brightness(75%) saturate(120%);
   }
   svg {
     ${svgCSS}
