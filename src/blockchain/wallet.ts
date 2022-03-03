@@ -25,7 +25,8 @@ export const getAllAccounts = async () => {
       return accounts;
     }
   } catch (error) {
-    console.error("Error getting accounts", error);
+    console.log("metamas error", error);
+    toast.error(getErrorMessage(error));
   }
 };
 
@@ -507,4 +508,19 @@ export const getReducedPoolToken = (percentage: any, balance: any) => {
     BUSDBalance,
     BUSTBalance,
   };
+};
+
+export const getErrorMessage = (errorObj: any) => {
+  let errorMessage;
+  switch (true) {
+    case errorObj.code === -32002:
+      errorMessage =
+        "A wallet request is already running. Please click on metamask extension and login.";
+      break;
+
+    default:
+      errorMessage = "Something went wrong";
+      break;
+  }
+  return errorMessage;
 };

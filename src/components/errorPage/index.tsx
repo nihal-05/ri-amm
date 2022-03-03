@@ -13,7 +13,6 @@ export const ErrorPageWrapper = styled.div`
     font-size: 28px;
     color: rgb(43, 43, 43);
     text-align: center;
-    margin: 25px 0;
   }
   img {
     display: block;

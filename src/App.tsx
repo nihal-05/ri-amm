@@ -65,6 +65,7 @@ const App = () => {
   const [isFetchedBalance, setIsFetchedBalance] = useState(false); // (UI) passing computedTokenBalances
 
   const [myCall, setMyCall] = useState(""); // (UI)
+  const [errorText, setErrorText] = useState(""); // (UI)
 
   // ─── STATE FOR SWAP  SECTION ────────────────────────────────────────────────
 
@@ -219,8 +220,7 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      const accounts = await walletService.getAllAccounts();
-      setMyAccount((accounts as any)[0]);
+      initializeWallet();
       // getting reserves
       const reservesFrom =
         await await walletService.fetchReservesFromPairContract();
