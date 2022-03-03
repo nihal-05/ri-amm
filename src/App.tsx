@@ -75,6 +75,8 @@ const App = () => {
     setMyAccount((accounts as any)[0]);
   };
   // ─── FORM LOGIC (start) ─────────────────────────────────────────────────────────────────
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSvgClick = () => {
     setIsNormal(!isNormal);
   };
