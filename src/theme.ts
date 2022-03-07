@@ -146,6 +146,7 @@ body {
     padding: 16px;
     font-family:'sans-serif';
     width: 100vw;
+    /* font-size:12pt ; */
     height: 100vh;
     color: #000F08;
    

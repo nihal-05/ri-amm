@@ -1,12 +1,18 @@
+import { Web3ReactProvider } from "@web3-react/core";
 import React from "react";
 import ReactDOM from "react-dom";
+import Web3 from "web3";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import App from "./App";
+
 import RootApp from "./components";
 
 import reportWebVitals from "./reportWebVitals";
 import { GlobalStyle } from "./theme";
+
+function getLibrary(provider: any) {
+  return new Web3(provider);
+}
 
 ReactDOM.render(
   <React.StrictMode>
@@ -22,8 +28,9 @@ ReactDOM.render(
       draggable
       pauseOnHover
     />
-
-    <RootApp />
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <RootApp />
+    </Web3ReactProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

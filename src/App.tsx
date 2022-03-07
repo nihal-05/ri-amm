@@ -1,3 +1,4 @@
+import { useWeb3React } from "@web3-react/core";
 import React, { useEffect, useState } from "react";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -6,6 +7,7 @@ import * as walletService from "./blockchain/wallet";
 import Card from "./components/card";
 
 import { CardHeading } from "./components/card/style";
+import WalletButton from "./components/wallet";
 import {
   SharedArrowSign,
   SharedBlock,
@@ -13,6 +15,7 @@ import {
 } from "./shared/components";
 import { Button } from "./shared/components/button";
 import Input from "./shared/components/input";
+
 import {
   SharedBox,
   SharedFeedbackButton,
@@ -67,6 +70,8 @@ const App = () => {
   const [myCall, setMyCall] = useState(""); // (UI)
   const [errorText, setErrorText] = useState(""); // (UI)
 
+  const context = useWeb3React();
+
   // ─── STATE FOR SWAP  SECTION ────────────────────────────────────────────────
 
   // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────────────
@@ -75,6 +80,7 @@ const App = () => {
     const accounts = await walletService.getAllAccounts();
     setMyAccount((accounts as any)[0]);
   };
+
   // ─── FORM LOGIC (start) ─────────────────────────────────────────────────────────────────
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -153,6 +159,10 @@ const App = () => {
     }
   };
 
+  if (context.active) {
+    initializeWallet();
+  }
+
   const handleToken0Change = async (e: any) => {
     let value = e.target.value;
 
@@ -174,7 +184,6 @@ const App = () => {
     }
   };
 
-  console.log(showSection);
   const handleToken1Change = async (e: any) => {
     let value = e.target.value;
     setFormToken1Value(value);
@@ -225,7 +234,10 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      initializeWallet();
+      if (localStorage?.getItem("isWalletConnected") === "true") {
+        // handleMetamaskConnect();
+        initializeWallet();
+      }
       // getting reserves
       const reservesFrom =
         await await walletService.fetchReservesFromPairContract();
@@ -239,7 +251,6 @@ const App = () => {
         } else {
         }
         window.location.reload();
-        console.log(newAccounts);
       });
     }
     setShowSection("add");
@@ -330,7 +341,9 @@ const App = () => {
       reserves[0]
     );
 
-    const token0ValueInEther = await walletService.getEtherFromWei(token0Value);
+    const token0ValueInEther = await walletService.getEtherFromWei(
+      token0Value || "0"
+    );
     setFormToken0Value(token0ValueInEther);
   };
   const getToken1Value = async (token0Value: string) => {
@@ -342,7 +355,9 @@ const App = () => {
       reserves[1]
     );
 
-    const token1ValueInEther = await walletService.getEtherFromWei(token1Value);
+    const token1ValueInEther = await walletService.getEtherFromWei(
+      token1Value || "0"
+    );
     setFormToken1Value(token1ValueInEther);
   };
 
@@ -388,9 +403,9 @@ const App = () => {
 
   const Nav = (
     <Button onClick={initializeWallet} align="end" m="6px">
-      {myAccount !== ""
+      {/* {myAccount !== ""
         ? walletService.formatAccount(myAccount)
-        : "Connect Wallet"}
+        : "Connect Wallet"} */}
     </Button>
   );
 
@@ -413,7 +428,11 @@ const App = () => {
 
   return (
     <React.Fragment>
-      {Nav}
+      <SharedBox direction="row" justify="end" style={{ margin: "0 0 10px 0" }}>
+        {/* {Nav} */}
+        <WalletButton />
+      </SharedBox>
+
       <SharedFeedbackButton
         as="a"
         href="https://forms.gle/5piEZUJdCw9ZF5vE8"
