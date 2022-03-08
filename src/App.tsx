@@ -231,8 +231,6 @@ const App = () => {
     setRemoveLiqPercent(e.target.dataset.value);
   };
 
-  console.log(context.active);
-
   // ────────────────────────────────────────────────────────────── I ──────────
   //   :::::: U S E - E F F E C T S : :  :   :    :     :        :          :
   // ────────────────────────────────────────────────────────────────────────
@@ -270,7 +268,6 @@ const App = () => {
 
     if (myAccount !== "" && SUPPORTED_CHAINID === myChainId) {
       (async () => {
-        console.log("Yesss");
         // USER TOKEN BALANCES
 
         const token0Balance =
@@ -299,8 +296,6 @@ const App = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadingText, myAccount]);
-
-  console.log(myAccount);
 
   useEffect(() => {
     if ((reserves as any)[0] && poolTokenBalances.lpBalanace) {

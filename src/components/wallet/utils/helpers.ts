@@ -98,3 +98,15 @@ export const chainsMetadata: Network = {
 export const getRandomNumber = (max: number) => {
   return Math.floor(Math.random() * (max - 0 + 1)) + 0;
 };
+
+export const networkMetaData = {
+  chainId: "0x61",
+  chainName: "Binance TestNet",
+  nativeCurrency: {
+    name: "Binance Chain Native Token",
+    symbol: "BNB",
+    decimals: 18,
+  },
+  rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+  blockExplorerUrls: ["https://testnet.bscscan.com/address"],
+};
