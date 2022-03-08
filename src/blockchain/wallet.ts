@@ -23,6 +23,9 @@ export const getAllAccounts = async () => {
       });
 
       return accounts;
+    } else {
+      console.error("Please install metamask extension");
+      // toast.error("Please install MetaMask extension");
     }
   } catch (error) {
     console.log("metamas error", error);

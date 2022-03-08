@@ -10,10 +10,11 @@ const RootApp = () => {
   useEffect(() => {
     (async () => {
       if (SUPPORTED_CHAINID !== myChainId) {
-        await (window as any).ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: SUPPORTED_CHAINID }],
-        });
+        (window as any).ethereum &&
+          (await (window as any).ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: SUPPORTED_CHAINID }],
+          }));
       }
     })();
   }, []);
