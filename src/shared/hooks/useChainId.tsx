@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const useChainId = (): number => {
-  const [chainId, setChainId] = useState<number>();
+const useChainId = (): any => {
+  const [chainId, setChainId] = useState<any>();
 
   useEffect(() => {
     try {
@@ -10,15 +11,16 @@ const useChainId = (): number => {
           const chainIdHex = await (window as any).ethereum.request({
             method: "eth_chainId",
           });
-          const chainId = parseInt(chainIdHex, 16);
+          // const chainId = parseInt(chainIdHex, 16);  //     In decimal format
 
           (window as any).ethereum.on("chainChanged", (_chainId: any) => {
             (window as any).location.reload();
           });
 
-          setChainId(chainId);
+          setChainId(chainIdHex);
         } else {
-          console.error("Please install metamask");
+          // toast.error("Please install metamask extension");
+          console.error("Please install metamask extension");
         }
       })();
     } catch (error) {
@@ -26,7 +28,7 @@ const useChainId = (): number => {
     }
   }, []);
 
-  return Number(chainId);
+  return chainId;
 };
 
 export default useChainId;

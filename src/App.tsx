@@ -21,11 +21,11 @@ import {
   SharedFeedbackButton,
   SharedStack,
 } from "./shared/components/styled";
+import useChainId from "./shared/hooks/useChainId";
 import { AppWrapper } from "./theme";
 
 const App = () => {
   const [reserves, setReserves] = useState({});
-
   const [isNormal, setIsNormal] = useState(true);
 
   // eslint-disable-next-line
@@ -43,10 +43,11 @@ const App = () => {
   const [formToken0Value, setFormToken0Value] = useState<any>("");
   const [formToken1Value, setFormToken1Value] = useState<any>("");
 
-  const [userTokenBalances, setUserTokenBalances] = useState({
-    token0: "",
-    token1: "",
-  });
+  // ─── USER TOKEN BALANCES ────────────────────────────────────────────────────────
+
+  const [userToken0Balance, setUserToken0Balance] = useState<any>("");
+  const [userToken1Balance, setUserToken1Balance] = useState<any>("");
+
   const [isAddButtonDisabled, setIsAddButtonDisabled] = useState(true);
 
   // ─── STATE FOR REMOVE LIQUIDITY SECTION ────────────────────────────────────────────────
@@ -72,6 +73,8 @@ const App = () => {
 
   const context = useWeb3React();
 
+  const SUPPORTED_CHAINID = "0x61";
+  const myChainId = useChainId();
   // ─── STATE FOR SWAP  SECTION ────────────────────────────────────────────────
 
   // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────────────
@@ -228,6 +231,8 @@ const App = () => {
     setRemoveLiqPercent(e.target.dataset.value);
   };
 
+  console.log(context.active);
+
   // ────────────────────────────────────────────────────────────── I ──────────
   //   :::::: U S E - E F F E C T S : :  :   :    :     :        :          :
   // ────────────────────────────────────────────────────────────────────────
@@ -238,10 +243,13 @@ const App = () => {
         // handleMetamaskConnect();
         initializeWallet();
       }
+
       // getting reserves
-      const reservesFrom =
-        await await walletService.fetchReservesFromPairContract();
-      setReserves(reservesFrom);
+      if (context.active) {
+        const reservesFrom =
+          await await walletService.fetchReservesFromPairContract();
+        setReserves(reservesFrom);
+      }
     })();
 
     if ((window as any).ethereum) {
@@ -260,8 +268,11 @@ const App = () => {
     // ─── ADD WALLET CONNECTED LOGIC HERE  ──────────────────────    ──────────────────────
     // @ts-ignore
 
-    if (myAccount !== "") {
+    if (myAccount !== "" && SUPPORTED_CHAINID === myChainId) {
       (async () => {
+        console.log("Yesss");
+        // USER TOKEN BALANCES
+
         const token0Balance =
           myAccount &&
           (await await walletService.fetchToken0Balance(myAccount));
@@ -269,11 +280,12 @@ const App = () => {
           myAccount &&
           (await await walletService.fetchToken1Balance(myAccount));
         if (token0Balance && token1Balance) {
-          setUserTokenBalances({
-            token0: token0Balance,
-            token1: token1Balance,
-          });
+          setUserToken0Balance(token0Balance);
+          setUserToken1Balance(token1Balance);
         }
+
+        // POOL TOKEN BALANCES
+
         const liquidityLP =
           myAccount && (await walletService.getLpTokenBalance(myAccount));
         setPoolTokenBalances({
@@ -286,7 +298,9 @@ const App = () => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myAccount]);
+  }, [loadingText, myAccount]);
+
+  console.log(myAccount);
 
   useEffect(() => {
     if ((reserves as any)[0] && poolTokenBalances.lpBalanace) {
@@ -470,7 +484,7 @@ const App = () => {
             >
               <Input
                 tokenName="BUSD"
-                tokenBalance={Number(userTokenBalances.token0).toFixed(4) || ""}
+                tokenBalance={Number(userToken0Balance).toFixed(4) || ""}
                 type="text"
                 label="Input"
                 onChange={handleToken0Change}
@@ -484,7 +498,7 @@ const App = () => {
               </SharedBox>
               <Input
                 tokenName="BUST"
-                tokenBalance={Number(userTokenBalances.token1).toFixed(4) || ""}
+                tokenBalance={Number(userToken1Balance).toFixed(4) || ""}
                 type="text"
                 label="Input"
                 min={0}
@@ -579,8 +593,8 @@ const App = () => {
                 tokenName={isNormal ? "BUSD" : "BUST"}
                 tokenBalance={
                   isNormal
-                    ? Number(userTokenBalances.token0).toFixed(4)
-                    : Number(userTokenBalances.token1).toFixed(4) || ""
+                    ? Number(userToken0Balance).toFixed(4)
+                    : Number(userToken1Balance).toFixed(4) || ""
                 }
                 type="text"
                 onChange={handleToken0Change}
@@ -602,8 +616,8 @@ const App = () => {
                 tokenName={isNormal ? "BUST" : "BUSD"}
                 tokenBalance={
                   isNormal
-                    ? Number(userTokenBalances.token1).toFixed(4)
-                    : Number(userTokenBalances.token0).toFixed(4)
+                    ? Number(userToken0Balance).toFixed(4)
+                    : Number(userToken1Balance).toFixed(4)
                 }
                 type="text"
                 min={0}

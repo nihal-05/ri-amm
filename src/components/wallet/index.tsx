@@ -31,7 +31,7 @@ const WalletButton = (props: any) => {
   const [isCopied, setIsCopied] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const myChainId = useChainId() || 97;
+  const myChainId = parseInt(useChainId(), 16) || 97;
 
   //  Wallet conncection handlers
 
