@@ -12,7 +12,6 @@ export const SharedBlock = ({
   color,
   values = [],
 }: ISharedBlockProps) => {
-  console.log("values", values);
   const stringValues = ["BUST-LP", "BUSD", "BUST"];
 
   return (

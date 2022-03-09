@@ -76,15 +76,13 @@ const App = () => {
   const [showSection, setShowSection] = useState("add");
   const [isButtonDisabled, setButtonDisable] = useState(true);
 
-  console.log("isWalletConnected", isWalletConnected);
-
   // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────────────
 
   const getWalletAddress = async () => {
     // const accounts = await walletService.getAllAccounts();
 
     const account = await walletService.getWalletAddress();
-    console.log(account);
+
     setMyAccount(account);
   };
 
@@ -116,7 +114,7 @@ const App = () => {
       // ─── ADD LIQUIDITY ───────────────────────────────────────────────
       //
 
-      if (isToken0Approved && isToken1Approved) {
+      if (isToken0Allowed && isToken1Allowed) {
         setLoadingText("Adding Liquidity...");
         const addLiquiditySuccess = await walletService.addLiquidityToThePool(
           formToken0Value,
