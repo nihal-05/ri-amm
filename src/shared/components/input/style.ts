@@ -22,6 +22,7 @@ export const StyledInput = styled.input<{ cover: boolean }>`
   border: none;
   font-size: 1.1rem;
   padding: 5px;
+  background: transparent;
 
   width: ${(props) => (props.cover ? "90%" : "auto")};
   &:focus {

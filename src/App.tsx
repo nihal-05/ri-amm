@@ -21,9 +21,11 @@ import {
 import useChainId from "./shared/hooks/useChainId";
 import { AppWrapper } from "./theme";
 
+import Confetti from "react-confetti";
+
 const App = () => {
   const MAX_APPROVE_AMOUNT =
-    "115792089237316195423570985008687907853269984665640564039457584007913129639935"; //(2^256 - 1 )
+    "115792089237316195423570985008687907853269984665640564039457584007913129639935"; //(2^256 - 1 )  (Wei)
   const [reserves, setReserves] = useState({});
   // eslint-disable-next-line
   const [slippage, setSlippage] = useState(0.5); // 0.5%
@@ -72,6 +74,8 @@ const App = () => {
   const [loadingText, setLoadingText] = useState("");
   const [showSection, setShowSection] = useState("add");
   const [isButtonDisabled, setButtonDisable] = useState(true);
+
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────────────
 
@@ -132,6 +136,11 @@ const App = () => {
         );
 
         if (addLiquiditySuccess !== undefined) {
+          setShowConfetti(true);
+
+          setTimeout(() => {
+            setShowConfetti(false);
+          }, 6400);
           setLoadingText("");
           setFormToken0Value("");
           setFormToken1Value("");
@@ -156,6 +165,11 @@ const App = () => {
           );
 
           if (swapSuccess !== undefined) {
+            setShowConfetti(true);
+
+            setTimeout(() => {
+              setShowConfetti(false);
+            }, 6400);
             setLoadingText("");
             setFormToken0Value("");
             setFormToken1Value("");
@@ -168,6 +182,11 @@ const App = () => {
             deadline
           );
           if (swapSuccess !== undefined) {
+            setShowConfetti(true);
+
+            setTimeout(() => {
+              setShowConfetti(false);
+            }, 6400);
             setLoadingText("");
             setFormToken0Value("");
             setFormToken1Value("");
@@ -311,7 +330,7 @@ const App = () => {
   }, [isWalletConnected, loadingText]);
 
   useEffect(() => {
-    if (isFetchedBalance) {
+    if (isFetchedBalance && isWalletConnected) {
       (async () => {
         if ((reserves as any)[0] && poolTokenBalances.lpBalanace) {
           // @ts-ignore
@@ -349,7 +368,7 @@ const App = () => {
 
     if (
       myCall === "token0Change" &&
-      formToken0Value > Number(userToken0Balance).toFixed(4)
+      formToken0Value > Number(userToken0Balance)
     ) {
       setForm0ErrorText(
         `Please enter amount less than or equal to ${Math.floor(
@@ -360,7 +379,7 @@ const App = () => {
       setButtonDisable(true);
     } else if (
       myCall === "token1Change" &&
-      formToken1Value > Number(userToken1Balance).toFixed(4)
+      formToken1Value > Number(userToken1Balance)
     ) {
       setForm1ErrorText(
         `Please enter amount less than or equal to ${Math.floor(
@@ -435,6 +454,11 @@ const App = () => {
           );
 
         if (removeLiquiditySuccess) {
+          setShowConfetti(true);
+
+          setTimeout(() => {
+            setShowConfetti(false);
+          }, 6400);
           setLoadingText("");
           setComputedTokenBalances({
             BUSDBalance: 0,
@@ -706,6 +730,7 @@ const App = () => {
             </form>
           )}
         </Card>
+        {showConfetti && <Confetti numberOfPieces={700} />}
       </AppWrapper>
     </React.Fragment>
   );

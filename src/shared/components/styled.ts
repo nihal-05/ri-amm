@@ -82,5 +82,6 @@ export const SharedFeedbackButton = styled.button`
 export const SharedErrorText = styled.p`
   color: #ff696e;
   margin-top: 6px;
+  font-size: 0.9rem;
   padding-left: 10px;
 `;
