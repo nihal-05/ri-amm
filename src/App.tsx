@@ -258,6 +258,7 @@ const App = () => {
     // @ts-ignore
 
     if (isWalletConnected && SUPPORTED_CHAINID === myChainId) {
+      setIsFetchedBalance(false);
       (async () => {
         // USER TOKEN BALANCES
 
