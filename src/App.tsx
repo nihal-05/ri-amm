@@ -31,9 +31,6 @@ const App = () => {
   const [deadline, setDeadline] = useState(15); // 15 minutes
   const [myAccount, setMyAccount] = useState<any>("");
 
-  const [isToken0Approved, setIsToken0Approved] = useState(false);
-  const [isToken1Approved, setIsToken1Approved] = useState(false);
-
   const [isWalletConnected, setIsWalletConnected] = useState(false);
 
   // ─── STATE FOR ADD LIQUIDITY SECTION ────────────────────────────────────────────────
@@ -96,25 +93,36 @@ const App = () => {
     e.preventDefault();
 
     if (showSection === "add") {
-      setLoadingText("Approving BUSD token...   ");
+      if (
+        localStorage.getItem("isToken0Approved") !== "true" &&
+        localStorage.getItem("isToken1Approved") !== "true"
+      ) {
+        setLoadingText("Approving BUSD token...   ");
+        const isToken0Allowed = await walletService.getToken0Approve(
+          MAX_APPROVE_AMOUNT
+        );
 
-      const isToken0Allowed = await walletService.getToken0Approve(
-        formToken0Value
-      );
+        if (isToken0Allowed) {
+          localStorage.setItem("isToken0Approved", "true");
+        }
 
-      isToken0Allowed && setIsToken0Approved(true);
-      setLoadingText("Approving BUST token...");
-      const isToken1Allowed = await walletService.getToken1Approve(
-        formToken1Value
-      );
-
-      isToken1Allowed && setIsToken1Approved(true);
+        setLoadingText("Approving BUST token...");
+        const isToken1Allowed = await walletService.getToken1Approve(
+          MAX_APPROVE_AMOUNT
+        );
+        if (isToken1Allowed) {
+          localStorage.setItem("isToken1Approved", "true");
+        }
+      }
 
       //
       // ─── ADD LIQUIDITY ───────────────────────────────────────────────
       //
 
-      if (isToken0Allowed && isToken1Allowed) {
+      if (
+        localStorage.getItem("isToken0Approved") === "true" &&
+        localStorage.getItem("isToken1Approved") === "true"
+      ) {
         setLoadingText("Adding Liquidity...");
         const addLiquiditySuccess = await walletService.addLiquidityToThePool(
           formToken0Value,
@@ -134,10 +142,10 @@ const App = () => {
       // ─── SWAP TOKENS ───────────────────────────────────────────────
       //
       setLoadingText("Approving BUSD token...");
-      const busdApprove = await walletService.getToken0Approve(formToken0Value);
+      // const busdApprove = await walletService.getToken0Approve(formToken0Value);
       // setLoadingText("Approving BUST token...");
       // const bustApprove = await walletService.getToken1Approve(formToken1Value);
-      if (busdApprove) {
+      if (localStorage.getItem("isToken0Approved") === "true") {
         if (myCall === "token0Change") {
           setLoadingText("Swapping BUSD to BUST...");
           const swapSuccess = await walletService.callSwapExactTokenForTokens(
@@ -322,7 +330,7 @@ const App = () => {
       })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFetchedBalance]);
+  }, [isWalletConnected, isFetchedBalance]);
 
   useEffect(() => {
     setComputedTokenBalances(

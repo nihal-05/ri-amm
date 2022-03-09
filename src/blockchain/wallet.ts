@@ -142,7 +142,7 @@ export const getToken0Approve = async (amount0: string) => {
   try {
     if (Number(amount0) > 0 && amount0 !== "") {
       let balance = await token0ContractInstance.methods
-        .approve(spenderAddress, convertToWei(amount0)) // Add convertToWei() to second parameter when not approving Infinite tokens
+        .approve(spenderAddress, amount0) // Add convertToWei() to second parameter when not approving Infinite tokens
         .send({ from: (accounts as any)[0] });
       // console.info("getToken0Approve  END");
       if (balance) {
@@ -262,7 +262,7 @@ export const addLiquidityToThePool = async (
     // console.log("addLiquidityToThePool END");
   } catch (error) {
     console.error("addLiquidityToThePool", error);
-    toast.error("AddLiquidity Error");
+    toast.error(getErrorMessage(error));
   }
 };
 
@@ -316,7 +316,7 @@ export const removeLiquidityFromThePool = async (
     return removeLiquiditySuccess;
   } catch (error) {
     console.error("removeLiquidityFromThePool", error);
-    toast.error("RemoveLiquidity Error");
+    toast.error(getErrorMessage(error));
   }
 };
 
