@@ -61,7 +61,7 @@ const warning = css`
 `;
 const disabled = css`
   cursor: not-allowed;
-  opacity: 0.8;
+  opacity: 0.5;
 `;
 
 interface ButtonWrapperProps {
@@ -92,7 +92,7 @@ margin: ${(props) =>
         `${props.m![0]}px ${props.m![1]}px ${props.m![2]}px ${props.m![3]}px`};
   padding: ${(props) => props.p || "8px 10px"};
   min-width: ${(props) => props.cover && "100%"};
-  font-size: ${(props) => props.fontSize || "1.2rem"};
+  font-size: ${(props) => props.fontSize || "1rem"};
   ${(props) =>
     props.transparent &&
     css`

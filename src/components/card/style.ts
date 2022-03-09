@@ -9,7 +9,7 @@ export const CardWrapper = styled.div`
   padding: 10px 16px;
   background-color: #1c3738;
   font-family: sans-serif;
-  font-size: 1.1rem;
+  font-size: 1rem;
   justify-content: space-between;
   @media (min-width: ${screenSizes.mediaSX}px) {
     width: 400px;

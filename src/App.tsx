@@ -185,7 +185,7 @@ const App = () => {
     if (value >= 0 && value.length !== 0 && showSection === "add") {
       // Logic for Add Liquidity goes here
       // console.log("IN ADD");
-
+      setMyCall("token0Change");
       getToken1Value(value);
     } else if (value >= 0 && value.length !== 0 && showSection === "swap") {
       setMyCall("token0Change");
@@ -205,6 +205,7 @@ const App = () => {
     if (value >= 0 && value.length !== 0 && showSection === "add") {
       // console.log("IN Add");
       getToken0Value(value);
+      setMyCall("token1Change");
     } else if (value >= 0 && value.length !== 0 && showSection === "swap") {
       setMyCall("token1Change");
       // console.log("IN SWAP");
@@ -525,7 +526,11 @@ const App = () => {
                 type="text"
                 label="Input"
                 onChange={handleToken0Change}
-                value={formToken0Value}
+                value={
+                  formToken0Value !== "" && myCall !== "token0Change"
+                    ? Number(formToken0Value).toFixed(8)
+                    : formToken0Value
+                }
                 min={0}
                 onClick={clearForm}
                 cover
@@ -540,13 +545,18 @@ const App = () => {
                 label="Input"
                 min={0}
                 onChange={handleToken1Change}
-                value={formToken1Value}
+                value={
+                  formToken1Value !== "" && myCall !== "token1Change"
+                    ? Number(formToken1Value).toFixed(8)
+                    : formToken1Value
+                }
                 onClick={clearForm}
                 cover
               />
 
               <Button
                 align="center"
+                p="12px 10px"
                 cover
                 disabled={isButtonDisabled || loadingText !== ""}
                 btnType="success"
@@ -600,6 +610,7 @@ const App = () => {
               <Button
                 align="center"
                 onClick={handleRemoveLiquidity}
+                p="10px 10px"
                 cover
                 disabled={
                   loadingText !== "" || computedTokenBalances.lpBalanace === 0
@@ -636,7 +647,11 @@ const App = () => {
                   }
                   type="text"
                   onChange={handleToken0Change}
-                  value={formToken0Value}
+                  value={
+                    formToken0Value !== "" && myCall !== "token0Change"
+                      ? Number(formToken0Value).toFixed(8)
+                      : formToken0Value
+                  }
                   label="From"
                   min={0}
                   onClick={clearForm}
@@ -666,7 +681,11 @@ const App = () => {
                   min={0}
                   label="To"
                   onChange={handleToken1Change}
-                  value={formToken1Value}
+                  value={
+                    formToken1Value !== "" && myCall !== "token1Change"
+                      ? Number(formToken1Value).toFixed(8)
+                      : formToken1Value
+                  }
                   onClick={clearForm}
                   cover
                 />
@@ -678,6 +697,7 @@ const App = () => {
               <Button
                 align="center"
                 cover
+                p="12px 10px"
                 disabled={isButtonDisabled || loadingText !== ""}
                 btnType="warning"
               >

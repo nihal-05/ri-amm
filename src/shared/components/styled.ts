@@ -41,6 +41,7 @@ interface ISharedBox {
 
 export const SharedBox = styled.div<ISharedBox>`
   display: flex;
+  font-size: 0.8rem;
   color: ${(props) => props.color};
   flex-direction: ${(props) => props.direction};
   align-items: ${(props) => props.align};

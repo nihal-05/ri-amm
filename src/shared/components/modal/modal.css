@@ -30,7 +30,7 @@
   padding: 10px 20px;
   border-radius: 14px;
   font-weight: bold;
-  font-size: 12pt;
+  font-size: 1rem;
   cursor: pointer;
   color: var(--outlineColor);
   border: 1px solid #fff;
@@ -138,6 +138,7 @@
   display: grid;
   padding: 16px;
   grid-gap: 12px;
+  font-size: 0.9rem;
   text-align: left;
   border-radius: 20px;
   border: 1px solid var(--borderColor);
@@ -152,7 +153,6 @@
 
 .btn {
   background-color: var(--btnBg);
-  font-size: inherit;
   padding: 4px 6px;
   outline: none;
   border: none;
@@ -171,32 +171,31 @@
   outline: none;
   border: none;
   cursor: pointer;
-  font-size: inherit;
   background-color: transparent;
   color: var(--linkColor);
-  opacity: 0.6;
+  opacity: 0.9;
   transition: opacity 0.2s ease;
 }
 .clearBtn:focus-visible {
   outline: 1px solid var(--outlineColor);
 }
 .clearBtn:hover {
-  opacity: 0.9;
+  opacity: 0.6;
 }
 
 .myLink {
   display: inline-block;
   color: var(--linkColor);
   margin-left: 10px;
-  font-size: 10.2pt;
-  opacity: 0.5;
+  font-size: 0.9rem;
   transition: opacity 0.2s ease;
   text-decoration: none;
   cursor: pointer;
+  opacity: 1;
 }
 .myLink:hover {
+  opacity: 0.5;
   text-decoration: underline;
-  opacity: 1;
 }
 .myLink:focus-visible {
   outline: 1px solid var(--outlineColor);

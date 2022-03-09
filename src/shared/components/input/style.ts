@@ -11,6 +11,7 @@ export const InputInnerContainer = styled.div`
   display: flex;
   -webkit-box-align: center;
   align-items: center;
+  font-size: 0.9rem;
   -webkit-box-pack: justify;
   justify-content: space-between;
   margin-bottom: 0.5rem;
@@ -19,7 +20,7 @@ export const InputInnerContainer = styled.div`
 `;
 export const StyledInput = styled.input<{ cover: boolean }>`
   border: none;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   padding: 5px;
 
   width: ${(props) => (props.cover ? "90%" : "auto")};
