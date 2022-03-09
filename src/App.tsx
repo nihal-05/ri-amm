@@ -1,4 +1,3 @@
-import { useWeb3React } from "@web3-react/core";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -23,17 +22,19 @@ import useChainId from "./shared/hooks/useChainId";
 import { AppWrapper } from "./theme";
 
 const App = () => {
+  const MAX_APPROVE_AMOUNT =
+    "115792089237316195423570985008687907853269984665640564039457584007913129639935"; //(2^256 - 1 )
   const [reserves, setReserves] = useState({});
-  const [isNormal, setIsNormal] = useState(true);
-
   // eslint-disable-next-line
   const [slippage, setSlippage] = useState(0.5); // 0.5%
   // eslint-disable-next-line
   const [deadline, setDeadline] = useState(15); // 15 minutes
-  const [myAccount, setMyAccount] = useState("");
-  const [loadingText, setLoadingText] = useState(""); // (UI)
+  const [myAccount, setMyAccount] = useState<any>("");
 
-  const [showSection, setShowSection] = useState(""); // showing Section  (UI)
+  const [isToken0Approved, setIsToken0Approved] = useState(false);
+  const [isToken1Approved, setIsToken1Approved] = useState(false);
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
 
   // ─── STATE FOR ADD LIQUIDITY SECTION ────────────────────────────────────────────────
 
@@ -47,9 +48,6 @@ const App = () => {
 
   const [userToken0Balance, setUserToken0Balance] = useState<any>("");
   const [userToken1Balance, setUserToken1Balance] = useState<any>("");
-
-  const [isButtonDisabled, setButtonDisable] = useState(true);
-
   // ─── STATE FOR REMOVE LIQUIDITY SECTION ────────────────────────────────────────────────
 
   // Values are in Wei
@@ -65,22 +63,29 @@ const App = () => {
     BUSDBalance: 0,
     BUSTBalance: 0,
   });
-  const [removeLiqPercent, setRemoveLiqPercent] = useState<number>(0); // Remove liquidity percentange (UI)
+  const [removeLiqPercent, setRemoveLiqPercent] = useState<number>(0); //  (UI)
   const [isFetchedBalance, setIsFetchedBalance] = useState(false); // (UI) passing computedTokenBalances
 
-  const [myCall, setMyCall] = useState(""); // (UI)
+  // ─── STATE FOR HANDLING UI ────────────────────────────────────────────────
 
-  const context = useWeb3React();
+  const [myCall, setMyCall] = useState("");
+  const SUPPORTED_CHAINID = "0x61";
+  const myChainId = useChainId();
+  const [isNormal, setIsNormal] = useState(true);
+  const [loadingText, setLoadingText] = useState("");
+  const [showSection, setShowSection] = useState("add");
+  const [isButtonDisabled, setButtonDisable] = useState(true);
 
-  const SUPPORTED_CHAINID = "0x61"; // (UI)
-  const myChainId = useChainId(); // (UI)
-  // ─── STATE FOR SWAP  SECTION ────────────────────────────────────────────────
+  console.log("isWalletConnected", isWalletConnected);
 
   // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────────────
 
-  const initializeWallet = async () => {
-    const accounts = await walletService.getAllAccounts();
-    setMyAccount((accounts as any)[0]);
+  const getWalletAddress = async () => {
+    // const accounts = await walletService.getAllAccounts();
+
+    const account = await walletService.getWalletAddress();
+    console.log(account);
+    setMyAccount(account);
   };
 
   // ─── FORM LOGIC (start) ─────────────────────────────────────────────────────────────────
@@ -94,19 +99,24 @@ const App = () => {
 
     if (showSection === "add") {
       setLoadingText("Approving BUSD token...   ");
+
       const isToken0Allowed = await walletService.getToken0Approve(
-        formToken0Value
+        MAX_APPROVE_AMOUNT
       );
+
+      isToken0Allowed && setIsToken0Approved(true);
       setLoadingText("Approving BUST token...");
       const isToken1Allowed = await walletService.getToken1Approve(
-        formToken1Value
+        MAX_APPROVE_AMOUNT
       );
+
+      isToken1Allowed && setIsToken1Approved(true);
 
       //
       // ─── ADD LIQUIDITY ───────────────────────────────────────────────
       //
 
-      if (isToken0Allowed && isToken1Allowed) {
+      if (isToken0Approved && isToken1Approved) {
         setLoadingText("Adding Liquidity...");
         const addLiquiditySuccess = await walletService.addLiquidityToThePool(
           formToken0Value,
@@ -159,11 +169,8 @@ const App = () => {
         }
       }
     }
+    setLoadingText("");
   };
-
-  // if (context.active) {
-  //   initializeWallet();
-  // }
 
   const handleToken0Change = async (e: any) => {
     let value = e.target.value;
@@ -230,19 +237,12 @@ const App = () => {
     setRemoveLiqPercent(e.target.dataset.value);
   };
 
-  console.log(isFetchedBalance);
-
   // ────────────────────────────────────────────────────────────── I ──────────
   //   :::::: U S E - E F F E C T S : :  :   :    :     :        :          :
   // ────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    (async () => {
-      if (localStorage?.getItem("isWalletConnected") === "true") {
-        // handleMetamaskConnect();
-        initializeWallet();
-      }
-    })();
+    getWalletAddress();
 
     if ((window as any).ethereum) {
       (window as any).ethereum.on("accountsChanged", (newAccounts: any) => {
@@ -253,14 +253,13 @@ const App = () => {
         window.location.reload();
       });
     }
-    setShowSection("add");
   }, []);
 
   useEffect(() => {
     // ─── ADD WALLET CONNECTED LOGIC HERE  ──────────────────────    ──────────────────────
     // @ts-ignore
 
-    if (myAccount !== "" && SUPPORTED_CHAINID === myChainId) {
+    if (isWalletConnected && SUPPORTED_CHAINID === myChainId) {
       (async () => {
         // USER TOKEN BALANCES
 
@@ -288,13 +287,20 @@ const App = () => {
           lpBalanace: liquidityLP,
         });
 
-        console.log((reserves as any)[0]);
         setIsFetchedBalance(true);
       })();
+    } else {
+      setUserToken0Balance("");
+      setUserToken1Balance("");
+      setPoolTokenBalances({
+        lpBalanace: 0,
+        BUSDBalance: 0,
+        BUSTBalance: 0,
+      });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myAccount, loadingText]);
+  }, [isWalletConnected, loadingText]);
 
   useEffect(() => {
     if (isFetchedBalance) {
@@ -307,8 +313,6 @@ const App = () => {
               (reserves as any)[1],
               poolTokenBalances.lpBalanace
             );
-
-          console.log(busdBalance, bustBalance);
 
           setPoolTokenBalances({
             ...poolTokenBalances,
@@ -327,8 +331,6 @@ const App = () => {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [removeLiqPercent]);
-
-  console.log(poolTokenBalances);
 
   // ─── USE-EFFECTS FOR UI LOGIC ───────────────────────────────────────────────────────────────
 
@@ -363,6 +365,8 @@ const App = () => {
       setForm0ErrorText("");
       setForm1ErrorText("");
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formToken0Value, formToken1Value]);
 
   //
@@ -440,8 +444,9 @@ const App = () => {
   // ─── FOR THE UI SECTION ─────────────────────────────────────────────────────────────────
   //
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const Nav = (
-    <Button onClick={initializeWallet} align="end" m="6px">
+    <Button onClick={getWalletAddress} align="end" m="6px">
       {/* {myAccount !== ""
         ? walletService.formatAccount(myAccount)
         : "Connect Wallet"} */}
@@ -469,7 +474,7 @@ const App = () => {
     <React.Fragment>
       <SharedBox direction="row" justify="end" style={{ margin: "0 0 10px 0" }}>
         {/* {Nav} */}
-        <WalletButton />
+        <WalletButton onWalletConnect={setIsWalletConnected} />
       </SharedBox>
 
       <SharedFeedbackButton
@@ -680,3 +685,9 @@ const App = () => {
 };
 
 export default App;
+
+//
+// ─── COMMENT KEYWORDS ───────────────────────────────────────────────────────────
+//
+
+// NOAPPROVE = disable approving the tokens for every transaction thus increasing UX

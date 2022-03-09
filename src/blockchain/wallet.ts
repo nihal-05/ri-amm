@@ -33,6 +33,14 @@ export const getAllAccounts = async () => {
   }
 };
 
+export const getWalletAddress = async () => {
+  try {
+    const accounts = await web3.eth.getAccounts();
+    return accounts[0];
+  } catch (error) {
+    console.log("getWalletAddress Error", error);
+  }
+};
 //
 // ─── CONTRACTS INSTANCES ────────────────────────────────────────────────────────
 //
@@ -134,7 +142,7 @@ export const getToken0Approve = async (amount0: string) => {
   try {
     if (Number(amount0) > 0 && amount0 !== "") {
       let balance = await token0ContractInstance.methods
-        .approve(spenderAddress, convertToWei(amount0))
+        .approve(spenderAddress, amount0) // Add convertToWei() to second parameter when not approving Infinite tokens
         .send({ from: (accounts as any)[0] });
       // console.info("getToken0Approve  END");
       if (balance) {
@@ -146,7 +154,9 @@ export const getToken0Approve = async (amount0: string) => {
     }
   } catch (error) {
     console.error("getToken0Approve", error);
-    toast.error("BUSD token Approve Error");
+
+    console.log(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   }
 };
 export const getToken1Approve = async (amount1: string) => {
@@ -156,7 +166,7 @@ export const getToken1Approve = async (amount1: string) => {
   try {
     if (Number(amount1) > 0 && amount1 !== "") {
       let balance = await token1ContractInstance.methods
-        .approve(spenderAddress, convertToWei(amount1))
+        .approve(spenderAddress, amount1) // Add convertToWei() to second parameter when not approving Infinite tokens
         .send({ from: (accounts as any)[0] });
 
       if (balance) {
@@ -168,8 +178,9 @@ export const getToken1Approve = async (amount1: string) => {
       return;
     }
   } catch (error) {
-    toast.error("BUST token Approve Error");
     console.error("getToken1Approve", error);
+    toast.error(getErrorMessage(error));
+    return error;
   }
 };
 export const getPairTokenApprove = async (amount1: any) => {
@@ -188,7 +199,7 @@ export const getPairTokenApprove = async (amount1: any) => {
     return balance;
   } catch (error) {
     toast.error("Pair token Error");
-    console.error("getPairTokenApprove", error);
+    console.error(getErrorMessage(error));
   }
 };
 
@@ -519,6 +530,9 @@ export const getErrorMessage = (errorObj: any) => {
     case errorObj.code === -32002:
       errorMessage =
         "A wallet request is already running. Please click on metamask extension and login.";
+      break;
+    case errorObj.code === 4001:
+      errorMessage = "You rejected the transaction request";
       break;
 
     default:

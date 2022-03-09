@@ -21,9 +21,7 @@ const WalletButton = (props: any) => {
 
   const [walletError, setWalletError] = useState("");
   const [currentWalletArr, setCurrentWalletArr] = useState<any>([]);
-  const [connectedAccounts, setConnectedAccounts] = useState<any>(
-    () => new Set()
-  );
+
   const [walletBalance, setWalletBalance] = useState<any>("");
   const [showAllAccounts, setShowAllAccounts] = useState(true);
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -38,9 +36,9 @@ const WalletButton = (props: any) => {
   const handleMetamaskConnect = async () => {
     try {
       await context.activate(injected, undefined, true);
+      setIsOpen(false);
       localStorage.setItem("isWalletConnected", "true");
-      props.onButtonClick(context.account);
-      setConnectedAccounts((prev: any) => new Set(...prev).add("Metamask"));
+      props.onWalletConnect(true);
     } catch (error) {
       setWalletError(getErrorMessage(error));
     } finally {
@@ -86,7 +84,7 @@ const WalletButton = (props: any) => {
   const dataSrc = [
     {
       name: "Metamask",
-      imgSrc: "https://app.uniswap.org/static/media/metamask.02e3ec27.png",
+      imgSrc: "/metamask.png",
       onClick: handleMetamaskConnect,
     },
     // {
@@ -116,6 +114,18 @@ const WalletButton = (props: any) => {
     setShowAllAccounts(true);
   }
 
+  const handleWalletDisconnect = async () => {
+    try {
+      await context.deactivate();
+      setIsOpen(false);
+      props.onWalletConnect(false);
+      localStorage.setItem("isWalletConnected", "false");
+      // window.location.reload();
+    } catch (ex) {
+      console.error(ex);
+    }
+  };
+
   //  Helper Handlers
 
   const handleCopyTextClick = (e: any) => {
@@ -130,6 +140,7 @@ const WalletButton = (props: any) => {
     setShowAllAccounts(true);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleWalletChange = () => {
     setShowAllAccounts(false);
   };
@@ -182,13 +193,12 @@ const WalletButton = (props: any) => {
             <h3>Initializing ....</h3>
           </button>
         )}
-
         {/* Wallet Connect Error */}
-        {/* {walletError && (
+        {walletError && (
           <button className="card" disabled>
             <h3 style={{ color: "red" }}>{walletError}</h3>
           </button>
-        )} */}
+        )}
         {/* Wallet select Initialization  */}
         {currentWalletArr!.length >= 1 &&
           // @ts-ignore
@@ -211,16 +221,20 @@ const WalletButton = (props: any) => {
               )}
             </React.Fragment>
           ))}
-
         {/* Wallet connected  */}
-
-        {showAllAccounts && context.active && (
+        {context.active && (
           <section className="connect-container">
             <div className="connect-container--header">
               <p>Connected with Metamask</p>
-              <button className="btn" onClick={handleWalletChange}>
+              {/* <button className="btn" onClick={handleWalletChange}>
                 Change
-              </button>
+              </button> */}
+
+              {localStorage.getItem("isWalletConnected") === "true" && (
+                <button className="btn" onClick={handleWalletDisconnect}>
+                  Disconnect
+                </button>
+              )}
             </div>
             <div className="connect-container--body">
               <h1>{context.account && formatAccount(context.account)}</h1>
@@ -239,9 +253,7 @@ const WalletButton = (props: any) => {
             </div>
           </section>
         )}
-
         {/* Wallet Not Connected  */}
-
         {(!showAllAccounts || (!context.active && !loading && !walletError)) &&
           dataSrc.map((d) => (
             <React.Fragment key={d.name}>
@@ -259,7 +271,7 @@ const WalletButton = (props: any) => {
                 }}
               >
                 <div className="align-center">
-                  {connectedAccounts.has(d.name) ? connectedDot : null}
+                  {/* {connectedAccounts.has(d.name) ? connectedDot : null} */}
                   <h3>{d.name}</h3>
                 </div>
                 <img src={d.imgSrc} width="24px" height="24px" alt={d.name} />

@@ -1,21 +1,10 @@
 import React from "react";
-import { useWeb3React } from "@web3-react/core";
+
 import Modal from "react-modal";
 
 import "./modal.css";
 
 const MyModal = (props: any) => {
-  const { deactivate } = useWeb3React();
-  const handleWalletDisconnect = async () => {
-    try {
-      await deactivate();
-      localStorage.setItem("isWalletConnected", "false");
-      window.location.reload();
-    } catch (ex) {
-      console.error(ex);
-    }
-  };
-
   return (
     <div>
       <Modal
@@ -34,11 +23,6 @@ const MyModal = (props: any) => {
               props.modalTitle
             )}
 
-            {localStorage.getItem("isWalletConnected") === "true" && (
-              <button className="btn" onClick={handleWalletDisconnect}>
-                Disconnect
-              </button>
-            )}
             <button
               title="Close"
               className=" clearBtn close_modal"

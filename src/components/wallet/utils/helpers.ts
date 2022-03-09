@@ -7,6 +7,7 @@ const web3 = new Web3(Web3.givenProvider || "http://localhost:3000");
 
 export const getErrorMessage = (errorObj: any) => {
   let errorMessage;
+
   switch (true) {
     case errorObj instanceof UserRejectedRequestError:
       errorMessage = "You rejected the wallet request";
