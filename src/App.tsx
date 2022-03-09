@@ -99,13 +99,13 @@ const App = () => {
       setLoadingText("Approving BUSD token...   ");
 
       const isToken0Allowed = await walletService.getToken0Approve(
-        MAX_APPROVE_AMOUNT
+        formToken0Value
       );
 
       isToken0Allowed && setIsToken0Approved(true);
       setLoadingText("Approving BUST token...");
       const isToken1Allowed = await walletService.getToken1Approve(
-        MAX_APPROVE_AMOUNT
+        formToken1Value
       );
 
       isToken1Allowed && setIsToken1Approved(true);

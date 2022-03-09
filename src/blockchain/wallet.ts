@@ -142,7 +142,7 @@ export const getToken0Approve = async (amount0: string) => {
   try {
     if (Number(amount0) > 0 && amount0 !== "") {
       let balance = await token0ContractInstance.methods
-        .approve(spenderAddress, amount0) // Add convertToWei() to second parameter when not approving Infinite tokens
+        .approve(spenderAddress, convertToWei(amount0)) // Add convertToWei() to second parameter when not approving Infinite tokens
         .send({ from: (accounts as any)[0] });
       // console.info("getToken0Approve  END");
       if (balance) {
@@ -155,7 +155,6 @@ export const getToken0Approve = async (amount0: string) => {
   } catch (error) {
     console.error("getToken0Approve", error);
 
-    console.log(getErrorMessage(error));
     toast.error(getErrorMessage(error));
   }
 };
@@ -349,8 +348,6 @@ export const getPoolTokenBalances = async (
 export const getAmountsOutFromSC = async (amountIn: any) => {
   // amountIn is in Ether (convert to wei)
 
-  // const myAmount = (amountIn * 8.83074).toString(); // Will be changed in the future
-
   // console.log("getAmountsOutFromSC START");
 
   const amountInWei = convertToWei(amountIn); //  CHANGE THIS...
@@ -362,7 +359,7 @@ export const getAmountsOutFromSC = async (amountIn: any) => {
     // console.log("getAmountsOutFromSC END");
     return getEtherFromWei(amountOut[1]);
   } catch (error) {
-    console.error("getAmountsOutFromSC", error);
+    // console.error("getAmountsOutFromSC", error);
   }
 
   return;
@@ -371,11 +368,9 @@ export const getAmountsOutFromSC = async (amountIn: any) => {
 export const getAmountsInFromSC = async (amountIn: any) => {
   // amountIn is in Ether (convert to wei)
 
-  // const myAmount = (amountIn * 8.83074).toString(); // Will be changed in the future
-
   // console.log("getAmountsInFromSC START");
 
-  const amountInWei = convertToWei(amountIn); //  CHANGE THIS...
+  const amountInWei = convertToWei(amountIn);
   try {
     const myAmountIn = await spenderContractInstance.methods
       .getAmountsIn(amountInWei, [token0Address, token1Address])
@@ -384,7 +379,7 @@ export const getAmountsInFromSC = async (amountIn: any) => {
     // console.log("getAmountsInFromSC END");
     return getEtherFromWei(myAmountIn[0]);
   } catch (error) {
-    console.error("getAmountsInFromSC", error);
+    // console.error("getAmountsInFromSC", error);
   }
 
   return;
@@ -430,8 +425,8 @@ export const callSwapExactTokenForTokens = async (
     }
     return swapExactTokenForTokensSuccess;
   } catch (error) {
-    toast.error("Swap 0 Error");
     console.error("callSwapExactTokenForTokens", error);
+    toast.error(getErrorMessage(error));
   }
 };
 
@@ -470,7 +465,7 @@ export const callSwapTokensForExactTokens = async (
     }
     return callSwapTokensForExactTokens;
   } catch (error) {
-    toast.error("Swap 1 Error");
+    toast.error(getErrorMessage(error));
     console.error("callSwapTokensForExactTokens", error);
   }
 };
