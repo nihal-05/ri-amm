@@ -1,11 +1,9 @@
 import { useWeb3React } from "@web3-react/core";
 import React, { useEffect, useState } from "react";
-
 import "react-toastify/dist/ReactToastify.css";
 
 import * as walletService from "./blockchain/wallet";
 import Card from "./components/card";
-
 import { CardHeading } from "./components/card/style";
 import WalletButton from "./components/wallet";
 import {
@@ -15,9 +13,9 @@ import {
 } from "./shared/components";
 import { Button } from "./shared/components/button";
 import Input from "./shared/components/input";
-
 import {
   SharedBox,
+  SharedErrorText,
   SharedFeedbackButton,
   SharedStack,
 } from "./shared/components/styled";
@@ -42,13 +40,15 @@ const App = () => {
   // Values are in ETHER
   const [formToken0Value, setFormToken0Value] = useState<any>("");
   const [formToken1Value, setFormToken1Value] = useState<any>("");
+  const [form0ErrorText, setForm0ErrorText] = useState(""); // (UI)
+  const [form1ErrorText, setForm1ErrorText] = useState(""); // (UI)
 
   // ─── USER TOKEN BALANCES ────────────────────────────────────────────────────────
 
   const [userToken0Balance, setUserToken0Balance] = useState<any>("");
   const [userToken1Balance, setUserToken1Balance] = useState<any>("");
 
-  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState(true);
+  const [isButtonDisabled, setButtonDisable] = useState(true);
 
   // ─── STATE FOR REMOVE LIQUIDITY SECTION ────────────────────────────────────────────────
 
@@ -69,12 +69,11 @@ const App = () => {
   const [isFetchedBalance, setIsFetchedBalance] = useState(false); // (UI) passing computedTokenBalances
 
   const [myCall, setMyCall] = useState(""); // (UI)
-  const [errorText, setErrorText] = useState(""); // (UI)
 
   const context = useWeb3React();
 
-  const SUPPORTED_CHAINID = "0x61";
-  const myChainId = useChainId();
+  const SUPPORTED_CHAINID = "0x61"; // (UI)
+  const myChainId = useChainId(); // (UI)
   // ─── STATE FOR SWAP  SECTION ────────────────────────────────────────────────
 
   // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────────────
@@ -128,9 +127,9 @@ const App = () => {
       //
       setLoadingText("Approving BUSD token...");
       const busdApprove = await walletService.getToken0Approve(formToken0Value);
-      setLoadingText("Approving BUST token...");
-      const bustApprove = await walletService.getToken1Approve(formToken1Value);
-      if (busdApprove && bustApprove) {
+      // setLoadingText("Approving BUST token...");
+      // const bustApprove = await walletService.getToken1Approve(formToken1Value);
+      if (busdApprove) {
         if (myCall === "token0Change") {
           setLoadingText("Swapping BUSD to BUST...");
           const swapSuccess = await walletService.callSwapExactTokenForTokens(
@@ -162,9 +161,9 @@ const App = () => {
     }
   };
 
-  if (context.active) {
-    initializeWallet();
-  }
+  // if (context.active) {
+  //   initializeWallet();
+  // }
 
   const handleToken0Change = async (e: any) => {
     let value = e.target.value;
@@ -231,6 +230,8 @@ const App = () => {
     setRemoveLiqPercent(e.target.dataset.value);
   };
 
+  console.log(isFetchedBalance);
+
   // ────────────────────────────────────────────────────────────── I ──────────
   //   :::::: U S E - E F F E C T S : :  :   :    :     :        :          :
   // ────────────────────────────────────────────────────────────────────────
@@ -240,13 +241,6 @@ const App = () => {
       if (localStorage?.getItem("isWalletConnected") === "true") {
         // handleMetamaskConnect();
         initializeWallet();
-      }
-
-      // getting reserves
-      if (context.active) {
-        const reservesFrom =
-          await await walletService.fetchReservesFromPairContract();
-        setReserves(reservesFrom);
       }
     })();
 
@@ -270,6 +264,10 @@ const App = () => {
       (async () => {
         // USER TOKEN BALANCES
 
+        const reservesFrom =
+          await await walletService.fetchReservesFromPairContract();
+        setReserves(reservesFrom);
+
         const token0Balance =
           myAccount &&
           (await await walletService.fetchToken0Balance(myAccount));
@@ -289,36 +287,39 @@ const App = () => {
           ...poolTokenBalances,
           lpBalanace: liquidityLP,
         });
-      })();
-    } else {
-      return;
-    }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadingText, myAccount]);
-
-  useEffect(() => {
-    if ((reserves as any)[0] && poolTokenBalances.lpBalanace) {
-      (async () => {
-        // @ts-ignore
-        const { busdBalance, bustBalance } =
-          await walletService.getPoolTokenBalances(
-            (reserves as any)[0],
-            (reserves as any)[1],
-            poolTokenBalances.lpBalanace
-          );
-
-        setPoolTokenBalances({
-          ...poolTokenBalances,
-          BUSDBalance: busdBalance,
-          BUSTBalance: bustBalance,
-        });
-
+        console.log((reserves as any)[0]);
         setIsFetchedBalance(true);
       })();
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [poolTokenBalances.lpBalanace]);
+  }, [myAccount, loadingText]);
+
+  useEffect(() => {
+    if (isFetchedBalance) {
+      (async () => {
+        if ((reserves as any)[0] && poolTokenBalances.lpBalanace) {
+          // @ts-ignore
+          const { busdBalance, bustBalance } =
+            await walletService.getPoolTokenBalances(
+              (reserves as any)[0],
+              (reserves as any)[1],
+              poolTokenBalances.lpBalanace
+            );
+
+          console.log(busdBalance, bustBalance);
+
+          setPoolTokenBalances({
+            ...poolTokenBalances,
+            BUSDBalance: busdBalance,
+            BUSTBalance: bustBalance,
+          });
+        }
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFetchedBalance]);
 
   useEffect(() => {
     setComputedTokenBalances(
@@ -327,11 +328,40 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [removeLiqPercent]);
 
+  console.log(poolTokenBalances);
+
   // ─── USE-EFFECTS FOR UI LOGIC ───────────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (formToken0Value && formToken1Value) {
-      setIsAddButtonDisabled(false);
+      setButtonDisable(false);
+    }
+
+    if (
+      myCall === "token0Change" &&
+      formToken0Value > Number(userToken0Balance).toFixed(4)
+    ) {
+      setForm0ErrorText(
+        `Please enter amount less than or equal to ${Math.floor(
+          Number(Number(userToken0Balance).toFixed(4))
+        )}`
+      );
+
+      setButtonDisable(true);
+    } else if (
+      myCall === "token1Change" &&
+      formToken1Value > Number(userToken1Balance).toFixed(4)
+    ) {
+      setForm1ErrorText(
+        `Please enter amount less than or equal to ${Math.floor(
+          Number(Number(userToken1Balance).toFixed(4))
+        )}`
+      );
+
+      setButtonDisable(true);
+    } else {
+      setForm0ErrorText("");
+      setForm1ErrorText("");
     }
   }, [formToken0Value, formToken1Value]);
 
@@ -506,7 +536,7 @@ const App = () => {
               <Button
                 align="center"
                 cover
-                disabled={isAddButtonDisabled || loadingText !== ""}
+                disabled={isButtonDisabled || loadingText !== ""}
                 btnType="success"
               >
                 {loadingText === "" ? "Add liquidity" : loadingText}
@@ -584,21 +614,26 @@ const App = () => {
                 margin: "40px 0",
               }}
             >
-              <Input
-                tokenName={isNormal ? "BUSD" : "BUST"}
-                tokenBalance={
-                  isNormal
-                    ? Number(userToken0Balance).toFixed(4)
-                    : Number(userToken1Balance).toFixed(4) || ""
-                }
-                type="text"
-                onChange={handleToken0Change}
-                value={formToken0Value}
-                label="From"
-                min={0}
-                onClick={clearForm}
-                cover
-              />
+              <div>
+                <Input
+                  tokenName={isNormal ? "BUSD" : "BUST"}
+                  tokenBalance={
+                    isNormal
+                      ? Number(userToken0Balance).toFixed(4)
+                      : Number(userToken1Balance).toFixed(4) || ""
+                  }
+                  type="text"
+                  onChange={handleToken0Change}
+                  value={formToken0Value}
+                  label="From"
+                  min={0}
+                  onClick={clearForm}
+                  cover
+                />
+                {form0ErrorText && (
+                  <SharedErrorText>{form0ErrorText}</SharedErrorText>
+                )}
+              </div>
               <SharedBox
                 direction="row"
                 justify="center"
@@ -607,25 +642,31 @@ const App = () => {
                 {SharedArrowSign}
               </SharedBox>
 
-              <Input
-                tokenName={isNormal ? "BUST" : "BUSD"}
-                tokenBalance={
-                  isNormal
-                    ? Number(userToken0Balance).toFixed(4)
-                    : Number(userToken1Balance).toFixed(4)
-                }
-                type="text"
-                min={0}
-                label="To"
-                onChange={handleToken1Change}
-                value={formToken1Value}
-                onClick={clearForm}
-                cover
-              />
+              <div>
+                <Input
+                  tokenName={isNormal ? "BUST" : "BUSD"}
+                  tokenBalance={
+                    isNormal
+                      ? Number(userToken1Balance).toFixed(4)
+                      : Number(userToken0Balance).toFixed(4)
+                  }
+                  type="text"
+                  min={0}
+                  label="To"
+                  onChange={handleToken1Change}
+                  value={formToken1Value}
+                  onClick={clearForm}
+                  cover
+                />
+                {form1ErrorText && (
+                  <SharedErrorText>{form1ErrorText}</SharedErrorText>
+                )}
+              </div>
+
               <Button
                 align="center"
                 cover
-                disabled={isAddButtonDisabled || loadingText !== ""}
+                disabled={isButtonDisabled || loadingText !== ""}
                 btnType="warning"
               >
                 {loadingText === "" ? "Swap" : loadingText}

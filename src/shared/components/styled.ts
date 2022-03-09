@@ -77,3 +77,9 @@ export const SharedFeedbackButton = styled.button`
   font-family: "Roboto", helvetica, arial, sans-serif;
   z-index: 999;
 `;
+
+export const SharedErrorText = styled.p`
+  color: #ff696e;
+  margin-top: 6px;
+  padding-left: 10px;
+`;
